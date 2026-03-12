@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MKN · ZITADEL Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161d;
+      --border: #1e2330;
+      --accent: #1a3a6b;
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --success: #22c55e;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border: 1px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--blue-light);
+      transform: rotate(45deg);
+    }
+    .logo-mark span { transform: rotate(-45deg); display: block; }
+
+    .logo-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--text);
+    }
+    .logo-text small {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0.2em;
+    }
+
+    .badge {
+      margin-left: auto;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      padding: 60px 40px;
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 0.25em;
+      color: var(--blue-light);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.3;
+      margin-bottom: 40px;
+      color: var(--text);
+    }
+
+    .config-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .config-panel h3 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--blue); }
+    input::placeholder { color: var(--muted); font-size: 12px; }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.2s, transform 0.1s;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn:hover { background: var(--blue-light); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-top: 12px;
+    }
+    .btn-secondary:hover { border-color: var(--blue); color: var(--blue-light); background: transparent; }
+
+    /* Status panels */
+    .status-panel {
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .status-panel.visible { display: block; }
+    .status-panel.success { border-color: var(--success); background: rgba(34,197,94,0.05); }
+    .status-panel.error { border-color: var(--error); background: rgba(239,68,68,0.05); }
+    .status-panel.info { border-color: var(--blue); background: rgba(37,99,235,0.05); }
+
+    .status-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .success .status-label { color: var(--success); }
+    .error .status-label { color: var(--error); }
+    .info .status-label { color: var(--blue-light); }
+
+    .token-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .token-field {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .token-key {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .token-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    .user-card {
+      background: var(--surface);
+      border: 1px solid var(--success);
+      padding: 24px 28px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .user-card.visible { display: block; }
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 300;
+      margin-bottom: 4px;
+    }
+    .user-email {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .user-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .loading.visible { display: flex; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 20px 40px;
+      border-top: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark"><span>MKN</span></div>
+  <div class="logo-text">
+    MKN GLOBAL
+    <small>ZITADEL TEST CLIENT</small>
+  </div>
+  <span class="badge">OIDC / PKCE</span>
+</header>
+
+<main>
+  <h1>Identity Test</h1>
+  <h2>ZITADEL Login<br/>Flow Tester</h2>
+
+  <!-- Config Panel -->
+  <div class="config-panel" id="configPanel">
+    <h3>Konfiguration</h3>
+
+    <div class="field">
+      <label>ZITADEL Domain</label>
+      <input type="text" id="domain" placeholder="mkn-enqqwp.eu1.zitadel.cloud" value="mkn-enqqwp.eu1.zitadel.cloud"/>
+    </div>
+
+    <div class="field">
+      <label>Client ID</label>
+      <input type="text" id="clientId" placeholder="363758583508216680" value="363758583508216680"/>
+    </div>
+
+    <div class="field">
+      <label>Organization (optional)</label>
+      <input type="text" id="orgDomain" placeholder="test-kunde-a"/>
+      <p class="hint">Organisation-Domain aus ZITADEL — steuert welcher IdP angezeigt wird</p>
+    </div>
+
+    <button class="btn" id="loginBtn" onclick="startLogin()">
+      ▶ &nbsp; Login starten
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    Token wird ausgetauscht...
+  </div>
+
+  <!-- Error -->
+  <div class="status-panel error" id="errorPanel">
+    <div class="status-label">Fehler</div>
+    <div id="errorMsg" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px;"></div>
+  </div>
+
+  <!-- User Card -->
+  <div class="user-card" id="userCard">
+    <div class="status-label" style="color: var(--success); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px;">✓ &nbsp; Authentifiziert</div>
+    <div class="user-name" id="userName">—</div>
+    <div class="user-email" id="userEmail">—</div>
+    <div class="user-meta" id="userMeta"></div>
+  </div>
+
+  <!-- Token Info -->
+  <div class="status-panel info" id="tokenPanel">
+    <div class="status-label">Token Claims</div>
+    <div class="token-grid" id="tokenGrid"></div>
+  </div>
+
+  <!-- Logout -->
+  <button class="btn btn-secondary" id="logoutBtn" style="display:none" onclick="logout()">
+    ← &nbsp; Logout
+  </button>
+
+</main>
+
+<footer>
+  <span>MKN GLOBAL · ZITADEL TEST</span>
+  <span id="footerState">BEREIT</span>
+</footer>
+
+<script>
+  // PKCE helpers
+  function base64url(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  }
+
+  async function generatePKCE() {
+    const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    const challenge = base64url(digest);
+    return { verifier, challenge };
+  }
+
+  async function startLogin() {
+    const domain = document.getElementById('domain').value.trim();
+    const clientId = document.getElementById('clientId').value.trim();
+    const orgDomain = document.getElementById('orgDomain').value.trim();
+
+    if (!domain || !clientId) {
+      showError('Bitte Domain und Client ID eintragen.');
+      return;
+    }
+
+    const { verifier, challenge } = await generatePKCE();
+    const redirectUri = window.location.origin + window.location.pathname;
+
+    // Save to sessionStorage
+    sessionStorage.setItem('pkce_verifier', verifier);
+    sessionStorage.setItem('zitadel_domain', domain);
+    sessionStorage.setItem('zitadel_client_id', clientId);
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'openid profile email',
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      state: crypto.randomUUID(),
+    });
+
+    if (orgDomain) {
+      params.set('organization', orgDomain);
+    }
+
+    const authUrl = `https://${domain}/oauth/v2/authorize?${params.toString()}`;
+    window.location.href = authUrl;
+  }
+
+  async function handleCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+
+    if (error) {
+      showError(`${error}: ${params.get('error_description') || ''}`);
+      return;
+    }
+
+    if (!code) return;
+
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+
+    const verifier = sessionStorage.getItem('pkce_verifier');
+    const domain = sessionStorage.getItem('zitadel_domain');
+    const clientId = sessionStorage.getItem('zitadel_client_id');
+
+    if (!verifier || !domain || !clientId) {
+      showError('Session abgelaufen. Bitte neu einloggen.');
+      return;
+    }
+
+    showLoading(true);
+
+    try {
+      const redirectUri = window.location.origin + window.location.pathname;
+
+      const tokenRes = await fetch(`https://${domain}/oauth/v2/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: redirectUri,
+          client_id: clientId,
+          code_verifier: verifier,
+        }),
+      });
+
+      const tokenData = await tokenRes.json();
+
+      if (tokenData.error) {
+        showError(`Token Fehler: ${tokenData.error} — ${tokenData.error_description || ''}`);
+        return;
+      }
+
+      // Decode ID token
+      const idToken = tokenData.id_token;
+      const claims = JSON.parse(atob(idToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+      showUser(claims);
+      showTokenClaims(claims);
+
+    } catch (err) {
+      showError(`Netzwerkfehler: ${err.message}`);
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  function showUser(claims) {
+    document.getElementById('configPanel').style.display = 'none';
+    document.getElementById('userCard').classList.add('visible');
+    document.getElementById('logoutBtn').style.display = 'block';
+
+    const name = [claims.given_name, claims.family_name].filter(Boolean).join(' ') || claims.name || claims.preferred_username || '—';
+    document.getElementById('userName').textContent = name;
+    document.getElementById('userEmail').textContent = claims.email || claims.preferred_username || '—';
+
+    const meta = [
+      { k: 'SUB', v: claims.sub },
+      { k: 'ISS', v: claims.iss },
+      { k: 'ORG', v: claims['urn:zitadel:iam:user:resourceowner:name'] || claims.org || '—' },
+      { k: 'IAT', v: new Date(claims.iat * 1000).toLocaleString('de-DE') },
+    ];
+
+    document.getElementById('userMeta').innerHTML = meta.map(m => `
+      <div class="token-field">
+        <div class="token-key">${m.k}</div>
+        <div class="token-value" style="font-size:11px">${m.v}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('footerState').textContent = 'AUTHENTIFIZIERT';
+  }
+
+  function showTokenClaims(claims) {
+    const panel = document.getElementById('tokenPanel');
+    panel.classList.add('visible');
+
+    const interesting = ['sub', 'name', 'email', 'given_name', 'family_name', 'locale', 'exp', 'iat'];
+    const grid = document.getElementById('tokenGrid');
+
+    grid.innerHTML = interesting.filter(k => claims[k]).map(k => `
+      <div class="token-field">
+        <div class="token-key">${k}</div>
+        <div class="token-value">${k === 'exp' || k === 'iat' ? new Date(claims[k] * 1000).toLocaleString('de-DE') : claims[k]}</div>
+      </div>
+    `).join('');
+  }
+
+  function showError(msg) {
+    document.getElementById('errorPanel').classList.add('visible');
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('footerState').textContent = 'FEHLER';
+  }
+
+  function showLoading(show) {
+    document.getElementById('loading').classList.toggle('visible', show);
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    window.location.reload();
+  }
+
+  // On load: check for callback
+  handleCallback();
+</script>
+</body>
+</html>
