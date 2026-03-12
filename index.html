@@ -351,7 +351,7 @@
     <div class="field">
       <label>Organization (optional)</label>
       <input type="text" id="orgDomain" placeholder="test-kunde-a"/>
-      <p class="hint">Organisation-Domain aus ZITADEL — steuert welcher IdP angezeigt wird</p>
+      <p class="hint">Volle Org-Domain z.B. <strong>test-kunde-a.mkn-enqqwp.eu1.zitadel.cloud</strong></p>
     </div>
 
     <button class="btn" id="loginBtn" onclick="startLogin()">
@@ -431,19 +431,21 @@
     sessionStorage.setItem('zitadel_domain', domain);
     sessionStorage.setItem('zitadel_client_id', clientId);
 
+    // Build scope - add org scope if provided
+    let scope = 'openid profile email';
+    if (orgDomain) {
+      scope += ` urn:zitadel:iam:org:domain:primary:${orgDomain}`;
+    }
+
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
       response_type: 'code',
-      scope: 'openid profile email',
+      scope: scope,
       code_challenge: challenge,
       code_challenge_method: 'S256',
       state: crypto.randomUUID(),
     });
-
-    if (orgDomain) {
-      params.set('organization', orgDomain);
-    }
 
     const authUrl = `https://${domain}/oauth/v2/authorize?${params.toString()}`;
     window.location.href = authUrl;
